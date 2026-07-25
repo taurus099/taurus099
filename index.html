@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Muhammad Junaid Ur Rehman — SOC & OSINT Analyst</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #090c11;
+    --bg-alt: #0d1119;
+    --panel: #111826;
+    --panel-border: #1e2838;
+    --panel-border-hover: #2a3850;
+    --text: #dce4ef;
+    --text-dim: #7c8ba3;
+    --text-faint: #4d5a70;
+    --amber: #ffb020;
+    --amber-dim: #7a5a1c;
+    --red: #ff4d5e;
+    --red-dim: #6e2530;
+    --green: #35d18a;
+    --green-dim: #1d5c40;
+    --blue: #4da3ff;
+    --blue-dim: #244a76;
+    --mono: 'JetBrains Mono', monospace;
+    --display: 'Space Grotesk', sans-serif;
+    --body: 'Inter', sans-serif;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    *{animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important;}
+  }
+  body{
+    background:
+      radial-gradient(ellipse 900px 500px at 15% -5%, rgba(255,176,32,0.06), transparent 60%),
+      radial-gradient(ellipse 700px 500px at 100% 10%, rgba(77,163,255,0.05), transparent 60%),
+      var(--bg);
+    color:var(--text);
+    font-family:var(--body);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;}
+  ::selection{background:var(--amber); color:#0a0a0a;}
+  :focus-visible{outline:2px solid var(--amber); outline-offset:3px;}
+
+  .wrap{max-width:980px; margin:0 auto; padding:0 28px;}
+
+  /* ---------- NAV ---------- */
+  .console-bar{
+    position:sticky; top:0; z-index:50;
+    background:rgba(9,12,17,0.86);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--panel-border);
+  }
+  .console-bar .wrap{display:flex; align-items:center; justify-content:space-between; height:56px;}
+  .console-id{font-family:var(--mono); font-size:12px; color:var(--text-dim); display:flex; align-items:center; gap:8px;}
+  .console-id .dot{width:7px; height:7px; border-radius:50%; background:var(--green); box-shadow:0 0 8px var(--green); animation:pulse 2.4s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{opacity:1;} 50%{opacity:.35;}}
+  .console-nav{display:flex; gap:22px; font-family:var(--mono); font-size:12px; letter-spacing:.03em;}
+  .console-nav a{color:var(--text-dim); text-decoration:none; transition:color .15s;}
+  .console-nav a:hover{color:var(--amber);}
+  @media (max-width:640px){ .console-nav{display:none;} }
+
+  /* ---------- HERO ---------- */
+  .hero{padding:88px 0 64px; border-bottom:1px solid var(--panel-border);}
+  .ticket-tag{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:var(--mono); font-size:12px; color:var(--amber);
+    background:rgba(255,176,32,0.08); border:1px solid var(--amber-dim);
+    padding:5px 12px; border-radius:3px; margin-bottom:28px;
+  }
+  .hero h1{
+    font-family:var(--display); font-weight:700;
+    font-size:clamp(34px, 6vw, 58px); line-height:1.05;
+    letter-spacing:-0.01em; color:#f2f6fb;
+  }
+  .hero .role{
+    font-family:var(--mono); font-size:clamp(13px,2vw,16px); color:var(--blue);
+    margin-top:14px; letter-spacing:.02em;
+  }
+  .hero p.lede{
+    max-width:640px; margin-top:22px; color:var(--text-dim); font-size:16px;
+  }
+  .hero .meta-row{
+    display:flex; flex-wrap:wrap; gap:22px; margin-top:32px;
+    font-family:var(--mono); font-size:13px; color:var(--text-faint);
+  }
+  .hero .meta-row a{color:var(--text-dim); text-decoration:none; border-bottom:1px dotted var(--panel-border-hover);}
+  .hero .meta-row a:hover{color:var(--amber); border-color:var(--amber);}
+  .hero .stats{display:flex; gap:0; margin-top:44px; flex-wrap:wrap; border-top:1px solid var(--panel-border); padding-top:28px;}
+  .stat{padding-right:36px; margin-right:36px; border-right:1px solid var(--panel-border);}
+  .stat:last-child{border-right:none;}
+  .stat .num{font-family:var(--display); font-weight:700; font-size:30px; color:var(--amber);}
+  .stat .lbl{font-family:var(--mono); font-size:11.5px; color:var(--text-faint); margin-top:4px; text-transform:uppercase; letter-spacing:.05em;}
+
+  /* ---------- SECTION SHELL ---------- */
+  section{padding:64px 0;}
+  section + section{border-top:1px solid var(--panel-border);}
+  .sec-head{display:flex; align-items:baseline; gap:14px; margin-bottom:34px;}
+  .sec-head .prompt{font-family:var(--mono); color:var(--amber); font-size:14px;}
+  .sec-head h2{font-family:var(--display); font-size:22px; font-weight:600; color:#f2f6fb; letter-spacing:-.01em;}
+  .sec-head .rule{flex:1; height:1px; background:var(--panel-border);}
+
+  /* ---------- SKILLS ---------- */
+  .skills-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:14px;}
+  @media (max-width:760px){ .skills-grid{grid-template-columns:1fr;} }
+  .module{
+    background:var(--panel); border:1px solid var(--panel-border); border-radius:6px; padding:20px;
+    transition:border-color .15s, transform .15s;
+  }
+  .module:hover{border-color:var(--panel-border-hover); transform:translateY(-2px);}
+  .module .mod-head{display:flex; align-items:center; gap:9px; margin-bottom:12px;}
+  .module .mod-head .sw{width:8px; height:8px; border-radius:2px;}
+  .module h3{font-family:var(--mono); font-size:12.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--text-dim);}
+  .module ul{list-style:none;}
+  .module li{font-size:14px; color:var(--text); padding:5px 0; border-top:1px dashed var(--panel-border);}
+  .module li:first-child{border-top:none;}
+
+  /* ---------- INCIDENT LOG (EXPERIENCE) ---------- */
+  .ticket{
+    background:var(--panel); border:1px solid var(--panel-border); border-radius:6px;
+    margin-bottom:18px; overflow:hidden;
+  }
+  .ticket-head{
+    display:flex; align-items:center; justify-content:space-between; gap:16px;
+    padding:18px 22px; flex-wrap:wrap;
+  }
+  .ticket-left{display:flex; align-items:center; gap:14px; flex-wrap:wrap;}
+  .sev{
+    font-family:var(--mono); font-size:10.5px; font-weight:700; letter-spacing:.06em;
+    padding:4px 9px; border-radius:3px; text-transform:uppercase; white-space:nowrap;
+  }
+  .sev-critical{background:rgba(255,77,94,0.12); color:var(--red); border:1px solid var(--red-dim);}
+  .sev-high{background:rgba(255,176,32,0.12); color:var(--amber); border:1px solid var(--amber-dim);}
+  .sev-medium{background:rgba(77,163,255,0.12); color:var(--blue); border:1px solid var(--blue-dim);}
+  .ticket-id{font-family:var(--mono); font-size:12px; color:var(--text-faint);}
+  .ticket-role{font-family:var(--display); font-weight:600; font-size:17px; color:#f2f6fb;}
+  .ticket-org{font-size:13.5px; color:var(--text-dim);}
+  .ticket-right{text-align:right; font-family:var(--mono); font-size:12px; color:var(--text-faint);}
+  .status{
+    display:inline-flex; align-items:center; gap:6px; font-family:var(--mono); font-size:11px;
+    padding:3px 10px; border-radius:20px; margin-top:6px;
+  }
+  .status-ongoing{background:rgba(53,209,138,0.1); color:var(--green); border:1px solid var(--green-dim);}
+  .status-resolved{background:rgba(124,139,163,0.1); color:var(--text-dim); border:1px solid var(--panel-border-hover);}
+  .status .dot{width:6px; height:6px; border-radius:50%; background:currentColor;}
+  .ticket-body{padding:0 22px 22px; border-top:1px solid var(--panel-border);}
+  .ticket-body ul{list-style:none; margin-top:16px;}
+  .ticket-body li{
+    position:relative; padding:8px 0 8px 20px; font-size:14.5px; color:var(--text);
+    border-top:1px solid var(--bg-alt);
+  }
+  .ticket-body li:first-child{border-top:none;}
+  .ticket-body li::before{
+    content:'›'; position:absolute; left:0; color:var(--amber); font-family:var(--mono); font-weight:700;
+  }
+
+  /* ---------- PROJECTS / CASE FILES ---------- */
+  .cases{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  @media (max-width:760px){ .cases{grid-template-columns:1fr;} }
+  .case{
+    background:var(--panel); border:1px solid var(--panel-border); border-radius:6px; padding:22px;
+    display:flex; flex-direction:column; gap:10px;
+  }
+  .case .case-tag{font-family:var(--mono); font-size:11px; color:var(--text-faint); text-transform:uppercase; letter-spacing:.05em;}
+  .case h3{font-family:var(--display); font-size:17px; font-weight:600; color:#f2f6fb;}
+  .case p{font-size:14px; color:var(--text-dim);}
+  .case .yr{margin-left:auto; font-family:var(--mono); font-size:11px; color:var(--text-faint);}
+  .case-top{display:flex; align-items:center; justify-content:space-between;}
+
+  /* OSINT feature panel */
+  .osint-panel{
+    background:linear-gradient(160deg, rgba(255,176,32,0.05), rgba(77,163,255,0.03));
+    border:1px solid var(--amber-dim); border-radius:8px; padding:32px; margin-bottom:20px;
+  }
+  .osint-panel .case-tag{color:var(--amber);}
+  .osint-panel h3{font-size:20px; margin-top:6px;}
+  .osint-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top:18px;}
+  @media (max-width:700px){ .osint-grid{grid-template-columns:repeat(2,1fr);} }
+  .osint-node{
+    font-family:var(--mono); font-size:12px; color:var(--text); background:var(--bg-alt);
+    border:1px solid var(--panel-border); border-radius:4px; padding:10px 12px; text-align:center;
+  }
+  .osint-panel p{color:var(--text-dim); font-size:14.5px; margin-top:12px; max-width:640px;}
+
+  /* ---------- CERTS / EDU ---------- */
+  .split{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  @media (max-width:760px){ .split{grid-template-columns:1fr;} }
+  .badge-list{list-style:none;}
+  .badge-list li{
+    display:flex; align-items:center; gap:12px; padding:12px 0; border-top:1px dashed var(--panel-border); font-size:14.5px;
+  }
+  .badge-list li:first-child{border-top:none;}
+  .badge-list .yr{margin-left:auto; font-family:var(--mono); font-size:12px; color:var(--text-faint);}
+  .chip{width:6px; height:6px; border-radius:50%; background:var(--blue); flex-shrink:0;}
+
+  /* ---------- ACHIEVEMENTS ---------- */
+  .ach-row{display:flex; gap:14px; flex-wrap:wrap;}
+  .ach-chip{
+    font-family:var(--mono); font-size:12.5px; color:var(--text); background:var(--panel);
+    border:1px solid var(--panel-border); border-radius:20px; padding:9px 16px;
+  }
+
+  /* ---------- FOOTER ---------- */
+  footer{padding:56px 0 80px; text-align:center;}
+  footer .prompt{font-family:var(--mono); color:var(--text-faint); font-size:13px;}
+  footer h2{font-family:var(--display); font-size:26px; margin:14px 0 22px; color:#f2f6fb;}
+  footer .links{display:flex; gap:16px; justify-content:center; flex-wrap:wrap;}
+  footer a.btn{
+    font-family:var(--mono); font-size:13px; color:var(--bg); background:var(--amber);
+    padding:11px 20px; border-radius:4px; text-decoration:none; font-weight:600;
+    transition:transform .15s, box-shadow .15s;
+  }
+  footer a.btn.ghost{background:transparent; color:var(--text); border:1px solid var(--panel-border-hover);}
+  footer a.btn:hover{transform:translateY(-2px); box-shadow:0 6px 20px rgba(255,176,32,0.2);}
+  footer .fine{margin-top:40px; font-family:var(--mono); font-size:11px; color:var(--text-faint);}
+
+  /* ---------- SCROLL PROGRESS ---------- */
+  .scroll-progress{
+    position:fixed; top:0; left:0; height:2px; width:0%;
+    background:linear-gradient(90deg, var(--amber), var(--blue));
+    z-index:80; transition:width .08s linear;
+  }
+
+  /* ---------- CURSOR SPOTLIGHT ---------- */
+  .spotlight{
+    position:fixed; inset:0; z-index:1; pointer-events:none;
+    background:radial-gradient(600px circle at var(--mx,50%) var(--my,20%), rgba(255,176,32,0.05), transparent 65%);
+    opacity:0; transition:opacity .4s ease;
+  }
+  .spotlight.active{opacity:1;}
+  @media (hover:none){ .spotlight{display:none;} }
+
+  /* ---------- SCROLL REVEAL ---------- */
+  [data-reveal]{
+    opacity:0; transform:translateY(22px);
+    transition:opacity .7s cubic-bezier(.16,.8,.3,1), transform .7s cubic-bezier(.16,.8,.3,1);
+  }
+  [data-reveal].in-view{opacity:1; transform:translateY(0);}
+  [data-reveal-group] > *{
+    opacity:0; transform:translateY(18px);
+    transition:opacity .6s cubic-bezier(.16,.8,.3,1), transform .6s cubic-bezier(.16,.8,.3,1);
+  }
+  [data-reveal-group].in-view > *{opacity:1; transform:translateY(0);}
+  [data-reveal-group].in-view > *:nth-child(1){transition-delay:.02s;}
+  [data-reveal-group].in-view > *:nth-child(2){transition-delay:.10s;}
+  [data-reveal-group].in-view > *:nth-child(3){transition-delay:.18s;}
+  [data-reveal-group].in-view > *:nth-child(4){transition-delay:.26s;}
+  [data-reveal-group].in-view > *:nth-child(5){transition-delay:.34s;}
+  [data-reveal-group].in-view > *:nth-child(6){transition-delay:.42s;}
+  @media (prefers-reduced-motion: reduce){
+    [data-reveal], [data-reveal-group] > *{opacity:1 !important; transform:none !important;}
+  }
+
+  /* ---------- HERO TYPING ---------- */
+  .type-cursor{
+    display:inline-block; width:2px; height:1em; background:var(--blue);
+    margin-left:2px; vertical-align:-2px; animation:blink 1s step-end infinite;
+  }
+  @keyframes blink{0%,100%{opacity:1;} 50%{opacity:0;}}
+
+  /* ---------- HERO SCANLINE ---------- */
+  .scanline{
+    position:absolute; left:0; right:0; height:1px;
+    background:linear-gradient(90deg, transparent, rgba(77,163,255,0.5), transparent);
+    animation:scan 6s ease-in-out infinite; opacity:.5;
+  }
+  @keyframes scan{
+    0%{ top:0%; opacity:0;}
+    8%{opacity:.6;}
+    50%{ top:100%; opacity:.15;}
+    92%{opacity:.6;}
+    100%{ top:0%; opacity:0;}
+  }
+
+  /* ---------- ENHANCED HOVERS ---------- */
+  .ticket{transition:border-color .25s, transform .25s, box-shadow .25s;}
+  .ticket:hover{border-color:var(--panel-border-hover); transform:translateY(-3px); box-shadow:0 14px 34px rgba(0,0,0,0.35);}
+  .case{transition:border-color .25s, transform .25s, box-shadow .25s;}
+  .case:hover{border-color:var(--panel-border-hover); transform:translateY(-3px); box-shadow:0 14px 34px rgba(0,0,0,0.35);}
+  .osint-node{transition:border-color .2s, color .2s, transform .2s;}
+  .osint-node:hover{border-color:var(--amber-dim); color:var(--amber); transform:translateY(-2px);}
+  .ach-chip{transition:border-color .2s, transform .2s;}
+  .ach-chip:hover{border-color:var(--amber-dim); transform:translateY(-2px);}
+  footer a.btn{position:relative; overflow:hidden;}
+
+  .console-nav a{position:relative;}
+  .console-nav a::after{
+    content:''; position:absolute; left:0; bottom:-6px; width:0%; height:1px; background:var(--amber);
+    transition:width .25s ease;
+  }
+  .console-nav a:hover::after{width:100%;}
+
+  .hero .stats .stat .num{transition:color .3s;}
+
+  /* ---------- SOC LIVE DEFENSE TERMINAL ---------- */
+  .terminal-window{
+    background:#050708; border:1px solid var(--panel-border); border-radius:8px;
+    margin-bottom:28px; overflow:hidden;
+  }
+  .terminal-titlebar{
+    display:flex; align-items:center; gap:8px; padding:10px 14px;
+    background:#0b0f16; border-bottom:1px solid var(--panel-border);
+  }
+  .terminal-titlebar .tdot{width:9px; height:9px; border-radius:50%;}
+  .terminal-label{margin-left:10px; font-family:var(--mono); font-size:11px; color:var(--text-faint); letter-spacing:.04em;}
+  .terminal-body{
+    height:220px; overflow:hidden; padding:14px 16px; font-family:var(--mono); font-size:12.5px;
+    display:flex; flex-direction:column; justify-content:flex-end;
+  }
+  .term-line{
+    padding:2px 0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    animation:lineIn .3s ease;
+  }
+  @keyframes lineIn{ from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);} }
+  .term-line .tag{display:inline-block; min-width:78px; font-weight:700;}
+  .t-info .tag{color:var(--blue);}
+  .t-block .tag{color:var(--red);}
+  .t-ok .tag{color:var(--green);}
+  .t-warn .tag{color:var(--amber);}
+  .term-line .msg{color:var(--text-dim);}
+  .term-line .tstamp{color:var(--text-faint); margin-right:8px;}
+
+  /* ---------- RED TEAM / PENTEST MODE ---------- */
+  .ticket-redteam{
+    background:#0c0708 !important; border-color:#3a1418 !important; position:relative;
+  }
+  .ticket-redteam .ticket-body{border-top-color:#2a1013 !important;}
+  .rt-canvas{
+    position:absolute; inset:0; width:100%; height:100%; opacity:.16; pointer-events:none;
+  }
+  .rt-glitch{
+    position:relative; display:inline-block;
+  }
+  .rt-glitch.glitching::before, .rt-glitch.glitching::after{
+    content:attr(data-text); position:absolute; left:0; top:0; width:100%; overflow:hidden;
+  }
+  .rt-glitch.glitching::before{
+    color:var(--red); clip-path:inset(0 0 60% 0); transform:translate(-2px,-1px);
+    animation:glitchTop .5s steps(2,end) 2;
+  }
+  .rt-glitch.glitching::after{
+    color:var(--blue); clip-path:inset(60% 0 0 0); transform:translate(2px,1px);
+    animation:glitchBot .5s steps(2,end) 2;
+  }
+  @keyframes glitchTop{ 0%{transform:translate(-2px,-1px);} 50%{transform:translate(2px,1px);} 100%{transform:translate(-1px,0);} }
+  @keyframes glitchBot{ 0%{transform:translate(2px,1px);} 50%{transform:translate(-2px,-1px);} 100%{transform:translate(1px,0);} }
+  .rt-terminal{
+    background:#0a0505; border:1px solid #3a1418; border-radius:6px; padding:14px 16px;
+    font-family:var(--mono); font-size:12px; color:#ff8a93; margin:16px 22px 0; min-height:112px;
+  }
+  .rt-terminal .rline{padding:2px 0; opacity:.95;}
+  .rt-terminal .prompt-sym{color:var(--red); margin-right:6px;}
+  .rt-cursor-block{display:inline-block; width:7px; height:13px; background:var(--red); vertical-align:-2px; animation:blink 1s step-end infinite;}
+
+  /* ---------- OSINT RADAR / GLOBE ---------- */
+  .radar-wrap{display:flex; gap:32px; align-items:center; flex-wrap:wrap; margin-top:18px;}
+  .radar-scope{
+    position:relative; width:280px; height:280px; border-radius:50%; flex-shrink:0;
+    background:radial-gradient(circle, rgba(255,176,32,0.04), transparent 70%), #060809;
+    border:1px solid var(--amber-dim);
+  }
+  .radar-ring{position:absolute; border:1px solid rgba(255,176,32,0.15); border-radius:50%;}
+  .radar-sweep{
+    position:absolute; top:50%; left:50%; width:50%; height:2px; transform-origin:0 0;
+    background:linear-gradient(90deg, rgba(255,176,32,0.85), transparent);
+    animation:sweep 4s linear infinite;
+  }
+  @keyframes sweep{ from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
+  .radar-node{
+    position:absolute; width:8px; height:8px; border-radius:50%; background:var(--amber);
+    box-shadow:0 0 10px var(--amber); transform:translate(-50%,-50%);
+  }
+  .radar-node::after{
+    content:''; position:absolute; inset:-6px; border:1px solid var(--amber); border-radius:50%;
+    opacity:0; animation:ping 2.4s ease-out infinite;
+  }
+  @keyframes ping{ 0%{opacity:.7; transform:scale(.4);} 100%{opacity:0; transform:scale(2.6);} }
+  .radar-core{
+    position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+    width:10px; height:10px; border-radius:50%; background:var(--white); box-shadow:0 0 14px #fff;
+  }
+  .radar-feed{flex:1; min-width:260px;}
+  .radar-feed .coord{font-family:var(--mono); font-size:11.5px; color:var(--text-faint); margin-bottom:14px;}
+  .radar-feed .coord span{color:var(--blue);}
+  .signal-row{
+    display:flex; align-items:center; gap:10px; padding:9px 0; border-top:1px dashed var(--panel-border);
+    font-family:var(--mono); font-size:12.5px; color:var(--text);
+  }
+  .signal-row:first-of-type{border-top:none;}
+  .signal-row .sig-dot{width:6px; height:6px; border-radius:50%; background:var(--amber); flex-shrink:0;}
+  .signal-row .sig-src{color:var(--text-faint); margin-left:auto;}
+</style>
+</head>
+<body>
+
+<div class="scroll-progress" id="scrollProgress"></div>
+<div class="spotlight" id="spotlight"></div>
+
+<div class="console-bar">
+  <div class="wrap">
+    <div class="console-id"><span class="dot"></span> SESSION://junaid-ur-rehman &nbsp;STATUS: ACTIVE</div>
+    <nav class="console-nav">
+      <a href="#log">incident_log</a>
+      <a href="#skills">capabilities</a>
+      <a href="#osint">osint</a>
+      <a href="#cases">case_files</a>
+      <a href="#creds">credentials</a>
+      <a href="#contact">contact</a>
+    </nav>
+  </div>
+</div>
+
+<header class="hero" style="position:relative; overflow:hidden;">
+  <div class="scanline"></div>
+  <div class="wrap">
+    <div class="ticket-tag" data-reveal>● PROFILE_ID: MJR-2026 — ANALYST ONLINE</div>
+    <h1 data-reveal>Muhammad Junaid<br>Ur Rehman</h1>
+    <div class="role" data-reveal><span id="typeTarget"></span><span class="type-cursor"></span></div>
+    <p class="lede" data-reveal>Security monitoring professional who triages high-volume alerts, escalates by the book, and turns open-source intelligence into structured threat profiles — across enterprise SOC floors and industrial control networks alike.</p>
+    <div class="meta-row" data-reveal>
+      <span>📍 Islamabad, Pakistan</span>
+      <a href="mailto:kjunaid232@gmail.com">kjunaid232@gmail.com</a>
+      <a href="tel:+923030990833">+92 303 0990833</a>
+    </div>
+    <div class="stats" data-reveal-group>
+      <div class="stat"><div class="num" data-count="50" data-suffix="–100">0</div><div class="lbl">alerts triaged / shift</div></div>
+      <div class="stat"><div class="num" data-count="35" data-suffix="%+">0</div><div class="lbl">triage accuracy gain</div></div>
+      <div class="stat"><div class="num" data-count="10" data-suffix="+">0</div><div class="lbl">pentest engagements</div></div>
+      <div class="stat"><div class="num" data-count="3" data-suffix="">0</div><div class="lbl">years across SOC · pentest · ICS</div></div>
+    </div>
+  </div>
+</header>
+
+<section id="log">
+  <div class="wrap">
+    <div class="sec-head" data-reveal><span class="prompt">$</span><h2>incident_log --experience</h2><div class="rule"></div></div>
+
+    <div class="terminal-window" data-reveal id="socTerminalWrap">
+      <div class="terminal-titlebar">
+        <span class="tdot" style="background:#ff5f57;"></span>
+        <span class="tdot" style="background:#febc2e;"></span>
+        <span class="tdot" style="background:#28c840;"></span>
+        <span class="terminal-label">live_defense_feed.log — SentinelOne EDR / SOC Console</span>
+      </div>
+      <div class="terminal-body" id="socTerminal"></div>
+    </div>
+
+    <div data-reveal-group>
+    <div class="ticket">
+      <div class="ticket-head">
+        <div class="ticket-left">
+          <span class="sev sev-high">SEV-HIGH</span>
+          <span class="ticket-id">#TCK-003</span>
+          <div>
+            <div class="ticket-role">SOC Analyst</div>
+            <div class="ticket-org">Kardesler Security Company · Islamabad</div>
+          </div>
+        </div>
+        <div class="ticket-right">
+          Jan 2025 – Present
+          <div class="status status-ongoing"><span class="dot"></span>ONGOING</div>
+        </div>
+      </div>
+      <div class="ticket-body">
+        <ul>
+          <li>Triage 50–100 endpoint alerts per shift using SentinelOne EDR, separating genuine threats from noise to keep escalation queues accurate and timely.</li>
+          <li>Drove a 35%+ improvement in alert accuracy through refined triage criteria, cutting false-positive escalations across the team.</li>
+          <li>Correlate endpoint telemetry, system logs, and OSINT data to investigate incidents, shaping containment decisions before senior review.</li>
+          <li>Informally guide junior analysts' triage calls, improving consistency in how the team classifies and escalates alerts.</li>
+          <li>Produce incident reports detailing threat impact, affected assets, and remediation steps — used as the reference record during active investigations.</li>
+          <li>Apply working knowledge of SQLi, XSS, and authentication-flaw patterns to sharpen detection logic on recurring threats.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="ticket ticket-redteam" id="redteamTicket">
+      <canvas class="rt-canvas" id="rtCanvas"></canvas>
+      <div class="ticket-head">
+        <div class="ticket-left">
+          <span class="sev sev-critical">SEV-CRITICAL</span>
+          <span class="ticket-id">#TCK-002</span>
+          <div>
+            <div class="ticket-role"><span class="rt-glitch" id="rtGlitchTitle" data-text="Jr Penetration Tester">Jr Penetration Tester</span></div>
+            <div class="ticket-org">Pakistan Air Force</div>
+          </div>
+        </div>
+        <div class="ticket-right">
+          Aug 2024 – Dec 2024
+          <div class="status status-resolved"><span class="dot"></span>RESOLVED</div>
+        </div>
+      </div>
+      <div class="rt-terminal" id="rtTerminal"></div>
+      <div class="ticket-body">
+        <ul>
+          <li>Delivered 10+ web application and network penetration testing engagements, uncovering critical and high-severity vulnerabilities that shaped client remediation priorities.</li>
+          <li>Ran OSINT reconnaissance (WHOIS, Shodan, Maltego, Google Dorking) ahead of each engagement, mapping external attack surfaces to sharpen test precision.</li>
+          <li>Turned leaked credentials, exposed metadata, and public repository data into structured threat profiles, strengthening the realism of each assessment.</li>
+          <li>Built OSINT-driven adversary simulations that replicated real-world attacker behaviour for more representative testing outcomes.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="ticket">
+      <div class="ticket-head">
+        <div class="ticket-left">
+          <span class="sev sev-medium">SEV-MEDIUM</span>
+          <span class="ticket-id">#TCK-001</span>
+          <div>
+            <div class="ticket-role">Cyber Security Intern</div>
+            <div class="ticket-org">Phitech</div>
+          </div>
+        </div>
+        <div class="ticket-right">
+          Jun 2023 – Aug 2023
+          <div class="status status-resolved"><span class="dot"></span>RESOLVED</div>
+        </div>
+      </div>
+      <div class="ticket-body">
+        <ul>
+          <li>Deployed and configured Nozomi IDS across ICS environments, gaining direct exposure to industrial network monitoring and threat detection.</li>
+          <li>Designed and built an independent ICS intrusion-detection prototype, going beyond assigned tasks to apply classroom knowledge to a working system.</li>
+          <li>Researched ICS-specific vulnerabilities and presented findings that informed the team's security recommendations.</li>
+        </ul>
+      </div>
+    </div>
+    </div>
+  </div>
+</section>
+
+<section id="skills">
+  <div class="wrap">
+    <div class="sec-head" data-reveal><span class="prompt">$</span><h2>capabilities --list</h2><div class="rule"></div></div>
+    <div class="skills-grid" data-reveal-group>
+      <div class="module">
+        <div class="mod-head"><span class="sw" style="background:var(--amber)"></span><h3>Monitoring &amp; Response</h3></div>
+        <ul>
+          <li>Real-time alert triage (50–100/shift)</li>
+          <li>Multi-console dashboard operation</li>
+          <li>SOP-compliant escalation</li>
+          <li>Shift handover reporting</li>
+        </ul>
+      </div>
+      <div class="module">
+        <div class="mod-head"><span class="sw" style="background:var(--blue)"></span><h3>Security Tools</h3></div>
+        <ul>
+          <li>SentinelOne EDR</li>
+          <li>Nozomi IDS (ICS / IoT)</li>
+          <li>OSINT: Shodan, Maltego, WHOIS</li>
+          <li>Vuln. assessment (SQLi, XSS, auth flaws)</li>
+        </ul>
+      </div>
+      <div class="module">
+        <div class="mod-head"><span class="sw" style="background:var(--green)"></span><h3>Documentation &amp; Compliance</h3></div>
+        <ul>
+          <li>Structured incident reporting</li>
+          <li>Audit-ready recordkeeping</li>
+          <li>Cross-team escalation coordination</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="osint">
+  <div class="wrap">
+    <div class="sec-head" data-reveal><span class="prompt">$</span><h2>osint --module</h2><div class="rule"></div></div>
+    <div class="osint-panel" data-reveal>
+      <span class="case-tag">Focus area</span>
+      <h3>Open-Source Intelligence &amp; Reconnaissance</h3>
+      <p>Recon is the first move in every engagement Junaid runs — mapping external attack surfaces before a single exploit is attempted, and correlating public data into threat profiles that hold up to senior review.</p>
+      <div class="osint-grid" id="osintGridFallback" style="display:none;">
+        <div class="osint-node">Shodan</div>
+        <div class="osint-node">Maltego</div>
+        <div class="osint-node">WHOIS</div>
+        <div class="osint-node">Google Dorking</div>
+      </div>
+      <div class="radar-wrap">
+        <div class="radar-scope" id="radarScope">
+          <div class="radar-ring" style="inset:0;"></div>
+          <div class="radar-ring" style="inset:22%;"></div>
+          <div class="radar-ring" style="inset:44%;"></div>
+          <div class="radar-sweep"></div>
+          <div class="radar-core"></div>
+        </div>
+        <div class="radar-feed">
+          <div class="coord" id="coordTicker">SCANNING <span>0.0°N, 0.0°E</span></div>
+          <div class="signal-row"><span class="sig-dot"></span> Exposed service fingerprint <span class="sig-src">Shodan</span></div>
+          <div class="signal-row"><span class="sig-dot" style="background:var(--blue);"></span> Entity relationship graph <span class="sig-src">Maltego</span></div>
+          <div class="signal-row"><span class="sig-dot" style="background:var(--green);"></span> Domain / registrant record <span class="sig-src">WHOIS</span></div>
+          <div class="signal-row"><span class="sig-dot" style="background:var(--red);"></span> Indexed credential leak <span class="sig-src">Google Dorking</span></div>
+        </div>
+      </div>
+      <p>Applied to build structured threat profiles from leaked credentials, exposed metadata, and public repository data — and to construct OSINT-driven adversary simulations that mirror real attacker behaviour during pentest engagements and SOC investigations alike.</p>
+    </div>
+  </div>
+</section>
+
+<section id="cases">
+  <div class="wrap">
+    <div class="sec-head" data-reveal><span class="prompt">$</span><h2>case_files --projects</h2><div class="rule"></div></div>
+    <div class="cases" data-reveal-group>
+      <div class="case">
+        <div class="case-top"><span class="case-tag">Industrial Control Systems</span><span class="yr">2024</span></div>
+        <h3>ICS Intrusion Detection System</h3>
+        <p>Designed and tested a custom IDS for industrial control networks, focused on detecting anomalies and unauthorized access attempts.</p>
+      </div>
+      <div class="case">
+        <div class="case-top"><span class="case-tag">Database Engineering</span><span class="yr">2023–Present</span></div>
+        <h3>Blood Bank Database System</h3>
+        <p>Built a relational database enabling real-time tracking of donor records, inventory, and blood unit distribution.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="creds">
+  <div class="wrap">
+    <div class="sec-head" data-reveal><span class="prompt">$</span><h2>credentials --verify</h2><div class="rule"></div></div>
+    <div class="split" data-reveal-group>
+      <div class="module" style="padding:24px;">
+        <div class="mod-head"><span class="sw" style="background:var(--amber)"></span><h3>Certifications</h3></div>
+        <ul class="badge-list">
+          <li><span class="chip"></span>Hack The Box — Jr Penetration Tester<span class="yr">2022</span></li>
+          <li><span class="chip"></span>IBM — Cybersecurity Fundamentals<span class="yr">2023</span></li>
+          <li><span class="chip"></span>Google / IBM (Coursera) — Networks, Assets &amp; Threats Fundamentals<span class="yr">2023</span></li>
+        </ul>
+      </div>
+      <div class="module" style="padding:24px;">
+        <div class="mod-head"><span class="sw" style="background:var(--blue)"></span><h3>Education</h3></div>
+        <ul class="badge-list">
+          <li><span class="chip"></span>Bachelor of Cyber Security — Air University, Islamabad<span class="yr">2020–2024</span></li>
+        </ul>
+        <div class="mod-head" style="margin-top:22px;"><span class="sw" style="background:var(--green)"></span><h3>Achievements</h3></div>
+        <div class="ach-row">
+          <span class="ach-chip">Blackhat MEA 2024 (KSA) — Participant</span>
+          <span class="ach-chip">Ignite Pakistan Cybersecurity Hackathon 2024</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer id="contact">
+  <div class="wrap" data-reveal>
+    <div class="prompt">$ contact --initiate</div>
+    <h2>Let's talk security.</h2>
+    <div class="links">
+      <a class="btn" href="mailto:kjunaid232@gmail.com">Email Junaid</a>
+      <a class="btn ghost" href="tel:+923030990833">Call +92 303 0990833</a>
+    </div>
+    <div class="fine">Islamabad, Pakistan &nbsp;·&nbsp; Available for SOC / OSINT / Penetration Testing roles &nbsp;·&nbsp; Session closed cleanly, no anomalies detected.</div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* Scroll progress bar */
+  var progress = document.getElementById('scrollProgress');
+  function updateProgress(){
+    var h = document.documentElement;
+    var scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+    progress.style.width = (scrolled || 0) + '%';
+  }
+  document.addEventListener('scroll', updateProgress, {passive:true});
+  updateProgress();
+
+  /* Cursor spotlight (desktop only) */
+  var spot = document.getElementById('spotlight');
+  if (window.matchMedia('(hover:hover)').matches) {
+    document.addEventListener('mousemove', function(e){
+      spot.style.setProperty('--mx', e.clientX + 'px');
+      spot.style.setProperty('--my', e.clientY + 'px');
+      spot.classList.add('active');
+    }, {passive:true});
+    document.addEventListener('mouseleave', function(){ spot.classList.remove('active'); });
+  }
+
+  /* Scroll reveal */
+  var revealEls = document.querySelectorAll('[data-reveal], [data-reveal-group]');
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in-view');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
+    revealEls.forEach(function(el){ io.observe(el); });
+    /* Safety net: force-reveal anything still hidden after load, in case IO misbehaves */
+    setTimeout(function(){
+      revealEls.forEach(function(el){ el.classList.add('in-view'); });
+    }, 2200);
+  } else {
+    revealEls.forEach(function(el){ el.classList.add('in-view'); });
+  }
+
+  /* Hero typing effect */
+  var typeTarget = document.getElementById('typeTarget');
+  var fullText = 'SOC ANALYST  /  OSINT INVESTIGATOR  /  PENETRATION TESTING';
+  if (typeTarget) {
+    if (reduceMotion) {
+      typeTarget.textContent = fullText;
+    } else {
+      var i = 0;
+      function typeStep(){
+        typeTarget.textContent = fullText.slice(0, i);
+        i++;
+        if (i <= fullText.length) {
+          setTimeout(typeStep, 22);
+        }
+      }
+      setTimeout(typeStep, 400);
+    }
+  }
+
+  /* Animated stat counters */
+  var counters = document.querySelectorAll('[data-count]');
+  function animateCounter(el){
+    var target = parseInt(el.getAttribute('data-count'), 10);
+    var suffix = el.getAttribute('data-suffix') || '';
+    if (reduceMotion) { el.textContent = target + suffix; return; }
+    var start = 0;
+    var duration = 1100;
+    var startTime = null;
+    function step(ts){
+      if (!startTime) startTime = ts;
+      var progressT = Math.min((ts - startTime) / duration, 1);
+      var eased = 1 - Math.pow(1 - progressT, 3);
+      var val = Math.round(start + (target - start) * eased);
+      el.textContent = val + suffix;
+      if (progressT < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+  if (counters.length) {
+    var counterIO = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if (entry.isIntersecting) {
+          animateCounter(entry.target);
+          counterIO.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.4 });
+    counters.forEach(function(el){ counterIO.observe(el); });
+  }
+
+  /* ---------- SOC live defense feed ---------- */
+  var socTerminal = document.getElementById('socTerminal');
+  var socStarted = false;
+  var logPool = [
+    { t:'info',  msg:'Triaging 50–100 endpoint alerts this shift via SentinelOne EDR' },
+    { t:'ok',    msg:'Triage criteria refined — accuracy up 35%+, false positives down' },
+    { t:'info',  msg:'Correlating endpoint telemetry + system logs + OSINT data' },
+    { t:'block', msg:'Containment decision logged ahead of senior review' },
+    { t:'warn',  msg:'Junior analyst triage call flagged for consistency review' },
+    { t:'ok',    msg:'Incident report filed — reference record for active case' },
+    { t:'info',  msg:'Pattern match: SQLi / XSS / auth-flaw signature detected' },
+    { t:'ok',    msg:'Detection logic sharpened on recurring threat pattern' },
+    { t:'info',  msg:'Cross-team escalation coordinated — audit trail updated' },
+  ];
+  var tagText = { info:'ANALYZING', warn:'FLAGGED', block:'BLOCKED', ok:'RESOLVED' };
+  function pad(n){ return n < 10 ? '0'+n : ''+n; }
+  function nowStamp(){
+    var d = new Date();
+    return pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds());
+  }
+  var socIdx = 0;
+  function pushLogLine(){
+    if (!socTerminal) return;
+    var entry = logPool[socIdx % logPool.length];
+    socIdx++;
+    var row = document.createElement('div');
+    row.className = 'term-line t-' + entry.t;
+    row.innerHTML = '<span class="tstamp">'+nowStamp()+'</span><span class="tag">'+tagText[entry.t]+'</span><span class="msg">'+entry.msg+'</span>';
+    socTerminal.appendChild(row);
+    while (socTerminal.children.length > 9) { socTerminal.removeChild(socTerminal.firstChild); }
+    socTerminal.scrollTop = socTerminal.scrollHeight;
+  }
+  function startSocFeed(){
+    if (socStarted || !socTerminal) return;
+    socStarted = true;
+    for (var i=0;i<5;i++){ setTimeout(pushLogLine, i*220); }
+    setInterval(pushLogLine, reduceMotion ? 4000 : 1500);
+  }
+  var socWrap = document.getElementById('socTerminalWrap');
+  if (socWrap && 'IntersectionObserver' in window) {
+    var socIO = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){ if (entry.isIntersecting) { startSocFeed(); socIO.disconnect(); } });
+    }, { threshold: 0.2 });
+    socIO.observe(socWrap);
+  } else { startSocFeed(); }
+
+  /* ---------- Red-team matrix rain ---------- */
+  var rtCanvas = document.getElementById('rtCanvas');
+  function initMatrixRain(){
+    if (!rtCanvas || reduceMotion) return;
+    var ctx = rtCanvas.getContext('2d');
+    var parent = rtCanvas.parentElement;
+    function resize(){
+      rtCanvas.width = parent.clientWidth;
+      rtCanvas.height = parent.clientHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+    var chars = '01アカサタナ$#%&{}<>/\\';
+    var fontSize = 13;
+    var columns = Math.ceil(rtCanvas.width / fontSize);
+    var drops = new Array(columns).fill(0);
+    function draw(){
+      ctx.fillStyle = 'rgba(10,5,5,0.18)';
+      ctx.fillRect(0,0,rtCanvas.width, rtCanvas.height);
+      ctx.fillStyle = '#ff4d5e';
+      ctx.font = fontSize + 'px monospace';
+      for (var i=0;i<drops.length;i++){
+        var ch = chars[Math.floor(Math.random()*chars.length)];
+        ctx.fillText(ch, i*fontSize, drops[i]*fontSize);
+        if (drops[i]*fontSize > rtCanvas.height && Math.random() > 0.975) drops[i] = 0;
+        drops[i]++;
+      }
+      requestAnimationFrame(draw);
+    }
+    draw();
+  }
+
+  /* ---------- Red-team glitch + typed exploit sequence ---------- */
+  var rtTicket = document.getElementById('redteamTicket');
+  var rtStarted = false;
+  var exploitLines = [
+    'root@recon:~$ engagements --summary',
+    '[+] 10+ web app & network pentest engagements delivered',
+    'root@recon:~$ recon --tools shodan,maltego,whois,dorking',
+    '[+] External attack surface mapped ahead of each engagement',
+    'root@recon:~$ correlate --leaked-creds --exposed-metadata',
+    '[+] Structured threat profiles built from public repo data',
+    'root@recon:~$ simulate --adversary-behaviour real-world',
+    '[+] OSINT-driven adversary simulation constructed',
+    '[✓] Findings shaped client remediation priorities',
+  ];
+  function startRedteamSequence(){
+    if (rtStarted) return;
+    rtStarted = true;
+    initMatrixRain();
+    var glitchTitle = document.getElementById('rtGlitchTitle');
+    if (glitchTitle) {
+      setTimeout(function(){ glitchTitle.classList.add('glitching'); }, 250);
+      setInterval(function(){
+        glitchTitle.classList.add('glitching');
+        setTimeout(function(){ glitchTitle.classList.remove('glitching'); }, 500);
+      }, 5000);
+    }
+    var rtTerminal = document.getElementById('rtTerminal');
+    if (rtTerminal) {
+      if (reduceMotion) {
+        rtTerminal.innerHTML = exploitLines.map(function(l){ return '<div class="rline">'+l+'</div>'; }).join('');
+      } else {
+        var li = 0;
+        function typeLine(){
+          if (li >= exploitLines.length) return;
+          var row = document.createElement('div');
+          row.className = 'rline';
+          rtTerminal.appendChild(row);
+          var text = exploitLines[li];
+          var ci = 0;
+          function typeChar(){
+            row.textContent = text.slice(0, ci);
+            ci++;
+            if (ci <= text.length) { setTimeout(typeChar, 16); }
+            else { li++; setTimeout(typeLine, 260); }
+          }
+          typeChar();
+        }
+        setTimeout(typeLine, 400);
+      }
+    }
+  }
+  if (rtTicket && 'IntersectionObserver' in window) {
+    var rtIO = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){ if (entry.isIntersecting) { startRedteamSequence(); rtIO.disconnect(); } });
+    }, { threshold: 0.3 });
+    rtIO.observe(rtTicket);
+  } else if (rtTicket) { startRedteamSequence(); }
+
+  /* ---------- OSINT radar globe ---------- */
+  var radarScope = document.getElementById('radarScope');
+  if (radarScope) {
+    var nodeSpecs = [
+      { x: 28, y: 34 }, { x: 68, y: 22 }, { x: 78, y: 60 },
+      { x: 40, y: 74 }, { x: 58, y: 48 }, { x: 20, y: 62 },
+    ];
+    nodeSpecs.forEach(function(n, idx){
+      var el = document.createElement('div');
+      el.className = 'radar-node';
+      el.style.left = n.x + '%';
+      el.style.top = n.y + '%';
+      el.style.animationDelay = (idx * 0.4) + 's';
+      var afterDelay = document.createElement('style');
+      radarScope.appendChild(el);
+    });
+  }
+  var coordTicker = document.getElementById('coordTicker');
+  if (coordTicker) {
+    var cities = [
+      '24.86°N, 67.00°E', '51.50°N, -0.12°E', '40.71°N, -74.00°E',
+      '35.68°N, 139.69°E', '-33.86°N, 151.20°E', '55.75°N, 37.61°E',
+      '33.68°N, 73.04°E', '1.35°N, 103.81°E'
+    ];
+    var ci2 = 0;
+    setInterval(function(){
+      ci2 = (ci2 + 1) % cities.length;
+      coordTicker.innerHTML = 'SCANNING <span>' + cities[ci2] + '</span>';
+    }, reduceMotion ? 6000 : 1800);
+  }
+})();
+</script>
+</body>
+</html>
